@@ -23,31 +23,31 @@ router.post('/invite', function(req, res) {
         //   {"ok":true}
         //       or
         //   {"ok":false,"error":"already_invited"}
-        if (err) { return res.send('Error:' + err); }
+        if (err) { return res.send('Erreur :' + err); }
         body = JSON.parse(body);
         if (body.ok) {
           res.render('result', {
             community: config.community,
-            message: 'Success! Check "'+ req.body.email +'" for an invite from Slack.'
+            message: 'C\'est fait. Va vérifier "'+ req.body.email +'" pour confirmer l\'inscription.'
           });
         } else {
           var error = body.error;
           if (error === 'already_invited' || error === 'already_in_team') {
             res.render('result', {
               community: config.community,
-              message: 'Success! You were already invited.<br>' +
-                       'Visit <a href="https://'+ config.slackUrl +'">'+ config.community +'</a>'
+              message: 'Tu es déjà inscrit(e)<br>' +
+                       'Va sur <a href="https://'+ config.slackUrl +'">'+ config.community +'</a>'
             });
             return;
           } else if (error === 'invalid_email') {
-            error = 'The email you entered is an invalid email.';
+            error = 'Email invalide.';
           } else if (error === 'invalid_auth') {
-            error = 'Something has gone wrong. Please contact a system administrator.';
+            error = 'Un souci technique, contacte moi sur cedric.bazureau@lebeaujeu.com pour plus d\'information.';
           }
 
           res.render('result', {
             community: config.community,
-            message: 'Failed! ' + error,
+            message: 'Déso ! ' + error,
             isFailed: true
           });
         }
@@ -55,22 +55,22 @@ router.post('/invite', function(req, res) {
   } else {
     var errMsg = [];
     if (!req.body.email) {
-      errMsg.push('your email is required');
+      errMsg.push('Email obligatoire');
     }
 
     if (!!config.inviteToken) {
       if (!req.body.token) {
-        errMsg.push('valid token is required');
+        errMsg.push('Jeton d\'invitation obligatoire');
       }
 
       if (req.body.token && req.body.token !== config.inviteToken) {
-        errMsg.push('the token you entered is wrong');
+        errMsg.push('Mauvais jeton');
       }
     }
 
     res.render('result', {
       community: config.community,
-      message: 'Failed! ' + errMsg.join(' and ') + '.',
+      message: 'Déso ! ' + errMsg.join(' et ') + '.',
       isFailed: true
     });
   }
